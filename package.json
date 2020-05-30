@@ -1,0 +1,36 @@
+{
+  "name": "threejs-explorer",
+  "version": "0.0.1",
+  "description": "Three.js explorer",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "repository": "https://github.com/electron/electron-quick-start",
+  "keywords": [
+    "three.js",
+    "webgl",
+    "3D",
+    "explorer",
+    "playground",
+    "interactive"
+  ],
+  "author": "Krtolica Vujadin",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^9.0.0"
+  },
+  "dependencies": {
+    "dirty-json": "^0.8.0",
+    "extract-zip": "^2.0.0",
+    "fs-extra": "^9.0.0",
+    "golden-layout": "^1.5.9",
+    "http": "0.0.1-security",
+    "jquery.fancytree": "^2.35.0",
+    "path": "^0.12.7",
+    "process": "^0.11.10",
+    "remote-file-size": "^3.0.5",
+    "request": "^2.88.2",
+    "typings": "^2.1.1"
+  }
+}

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Three.js explorer v0.0.1</title>
+		<link rel="preload" as="font" href="css/RobotoMono-Medium.woff2" type="font/woff2" />
+		<link rel="stylesheet" href="css/main.css" />
+		<link rel="stylesheet" href="vendor/golden-layout/css/goldenlayout-base.css" />
+		<link rel="stylesheet" href="vendor/golden-layout/css/themes/goldenlayout-dark-theme.css" />
+		<link rel="stylesheet" href="vendor/jquery.fancytree/skin-lion/ui.fancytree.css" />
+	</head>
+	<body>	
+		<script>
+			const $ = require('jquery');
+			window.$ = $;
+			
+			const fs = require('fs-extra');
+			const path = require('path');
+			const process = require('process');
+			const dJSON = require('dirty-json');
+			const request = require('request');
+			const remoteFileSize = require('remote-file-size');
+			const extractZip = require('extract-zip');
+			const GoldenLayout = require('golden-layout');
+			const fancytree = require('jquery.fancytree');			
+			require('jquery.fancytree/dist/modules/jquery.fancytree.filter');
+			require('jquery.fancytree/dist/modules/jquery.fancytree.childcounter');
+		</script>
+		<script src="./views/ThreeDownloader.js"></script>
+		<script src="./views/CodeEditor.js"></script>
+		<script src="./views/CodeEditorView.js"></script>
+		<script src="./views/ExamplesTreeView.js"></script>
+		<script src="./views/ExamplesMainView.js"></script>	
+		<script src="./renderer.js"></script>
+	</body>
+</html>
