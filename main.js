@@ -20,6 +20,11 @@ function createWindow () {
   mainWindow.loadFile('index.html');
   
   Menu.setApplicationMenu(null);
+  
+  mainWindow.on('close', function (e) {
+	mainWindow.webContents.send('saveLayout', '');
+	//e.preventDefault()
+  });
 
   // Open the DevTools.
   //mainWindow.webContents.openDevTools();

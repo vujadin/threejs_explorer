@@ -1,5 +1,6 @@
 (function() {
 	
+	let appLayout = null;
 	let initApp = function() { 
 		let configDefault = {
 			settings: {
@@ -48,7 +49,11 @@
 			}]
 		};
 		
-		let appLayout = GoldenLayout ? new GoldenLayout(configDefault) : new window.GoldenLayout(configDefault);
+		if (fs.existsSync(path.join(__dirname, "/layouts/custom.json"))) {
+			configDefault = JSON.parse(fs.readFileSync(path.join(__dirname, "/layouts/custom.json"), "utf8"));
+		}
+		
+		appLayout = GoldenLayout ? new GoldenLayout(configDefault) : new window.GoldenLayout(configDefault);
 		appLayout.registerComponent('ExamplesMainView', ExamplesMainView);
 		appLayout.registerComponent('ExamplesTreeView', ExamplesTreeView);
 		appLayout.registerComponent('CodeEditorView', CodeEditorView);
@@ -71,6 +76,21 @@
 		
 		let codeEditor = new CodeEditor();		
 	};
+	
+	let ipcr = require('electron').ipcRenderer;
+	ipcr.on('saveLayout', function(event, message) {
+		let customLayout = null;
+		try {
+			customLayout = appLayout.toConfig();
+		}
+		catch( err ) {
+			console.log(err);
+		}
+		
+		if (customLayout != null) {
+			fs.writeFileSync(path.join(__dirname, "/layouts/custom.json"), JSON.stringify(customLayout, null, 4), "utf-8");				
+		}
+	});
 	
 	if (!fs.existsSync(process.cwd() + "/three.js-master")) {
 		new ThreeDownloader(initApp);
