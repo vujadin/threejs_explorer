@@ -53,6 +53,28 @@ let ExamplesTreeView = function(container, state) {
 		});
 		treeStruct.push(entry);
 	});
+
+	let customFolder = {
+		title: 'CUSTOM',
+		key: 'myStuff',
+		folder: true,
+		expanded: false,
+		children: []
+	};
+	treeStruct.push(customFolder);
+
+	if (fs.existsSync(cwd + "/customScripts")) {
+		fs.readdirSync(cwd + "/customScripts").forEach(function(item) {
+			if (item.endsWith('.dat')) {
+				let customEntry = {
+					title: item.replace('.dat', ''),
+					type: "example",
+					custom: true
+				};
+				customFolder.children.push(customEntry);
+			}
+		});
+	}
 	
 	let treeView = document.createElement('div');
 	treeView.id = 'examplesTreeView';
@@ -79,26 +101,49 @@ let ExamplesTreeView = function(container, state) {
 		},
 		activate: function(event, data) {
 			if (data.node.folder !== true) {
-				let exampleHTML = fs.readFileSync(cwd + "/three.js-master/examples/" + data.node.title + ".html", "utf8");
-				let scriptStart = exampleHTML.indexOf('<script type="module">') + '<script type="module">'.length;
-				let scriptEnd = exampleHTML.indexOf('</script>', scriptStart);
-				let tmpScript = exampleHTML.substr(scriptStart, scriptEnd - scriptStart);
-				let tmpHTML = exampleHTML.substr(0, scriptStart - '<script type="module">'.length) + 
-					"<script type='module' src='tmpScript.js'>" + 
-						exampleHTML.substr(scriptEnd, exampleHTML.length);
-								fs.writeFileSync(cwd + "/three.js-master/examples/index_tmp.html", tmpHTML);
-				
-				fs.writeFileSync(cwd + "/three.js-master/examples/tmpScript.js", tmpScript);
-				
-				document.getElementById("previewIFrame").src = cwd + "/three.js-master/examples/index_tmp.html";
-				
-				document.getElementById('codeEditor').loadScript(tmpScript.replace(/^\t\t\t/gm, ''));
-				document.getElementById('codeEditor').scriptLoaded = true;
+				if (data.node.data.custom) {
+					let scriptData = JSON.parse(fs.readFileSync(cwd + "/customScripts/" + data.node.title + ".dat", "utf8"));
+					window.loadedExample = scriptData.htmlFile.replace('.html', '');
+					let exampleHTML = fs.readFileSync(cwd + "/three.js-master/examples/" + scriptData.htmlFile, "utf8");
+					let tmpScript = scriptData.content;
+					let scriptStart = exampleHTML.indexOf('<script type="module">') + '<script type="module">'.length;
+					let scriptEnd = exampleHTML.indexOf('</script>', scriptStart);
+					let tmpHTML = exampleHTML.substr(0, scriptStart - '<script type="module">'.length) + 
+						"<script type='module' src='tmpScript.js'>" + 
+							exampleHTML.substr(scriptEnd, exampleHTML.length);
+
+					fs.writeFileSync(cwd + "/three.js-master/examples/index_tmp.html", tmpHTML);					
+					fs.writeFileSync(cwd + "/three.js-master/examples/tmpScript.js", tmpScript);
+					
+					document.getElementById("previewIFrame").src = cwd + "/three.js-master/examples/index_tmp.html";
+					
+					window.signals.loadScript.dispatch(tmpScript);
+				}
+				else {
+					window.loadedExample = data.node.title;
+					let exampleHTML = fs.readFileSync(cwd + "/three.js-master/examples/" + data.node.title + ".html", "utf8");
+					let scriptStart = exampleHTML.indexOf('<script type="module">') + '<script type="module">'.length;
+					let scriptEnd = exampleHTML.indexOf('</script>', scriptStart);
+					let tmpScript = exampleHTML.substr(scriptStart, scriptEnd - scriptStart);
+					let tmpHTML = exampleHTML.substr(0, scriptStart - '<script type="module">'.length) + 
+						"<script type='module' src='tmpScript.js'>" + 
+							exampleHTML.substr(scriptEnd, exampleHTML.length);
+
+					fs.writeFileSync(cwd + "/three.js-master/examples/index_tmp.html", tmpHTML);					
+					fs.writeFileSync(cwd + "/three.js-master/examples/tmpScript.js", tmpScript);
+					
+					document.getElementById("previewIFrame").src = cwd + "/three.js-master/examples/index_tmp.html";
+					
+					window.signals.loadScript.dispatch(tmpScript.replace(/^\t\t\t/gm, ''));
+				}
 			}
 		}
     });
 	
 	let fancyTreeRoot = $(treeView).fancytree("getTree");
+	let myStuffNode = fancyTreeRoot.getNodeByKey("myStuff");
+	myStuffNode.li.className += " myStuff";
+	myStuffNode.renderTitle();
 	
 	$(filterInputField).keyup(function(e){
 		fancyTreeRoot.clearFilter();
@@ -134,5 +179,27 @@ let ExamplesTreeView = function(container, state) {
 		$(filterMatchesSpan).text("");
 		fancyTreeRoot.clearFilter();
 	}).attr("disabled", true);
+
+	window.signals.saveChanges.add(function(data) {
+		let customScriptName = data.name;
+
+		if (fancyTreeRoot) {	
+			let name = customScriptName;
+			if (name == undefined || name == null) {
+				return;
+			}
+
+			if (fancyTreeRoot.getNodeByKey(name) == null) {
+				let rootNode = fancyTreeRoot.getNodeByKey("myStuff");				
+				let childNode = rootNode.addChildren({
+					title: name,
+					data: { "key": name, "name": name, "custom": true }
+				}, rootNode.getFirstChild());
+				childNode.key = name;
+			}
+
+			fancyTreeRoot.activateKey(name);
+		}
+	});
 	
 };

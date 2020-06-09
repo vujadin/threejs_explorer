@@ -48,7 +48,7 @@ body {
     border: none;
 }
 span.fancytree-title {
-	color: #bbbbbb !important;
+	color: #bbbbbb;
 }
 ul.fancytree-container {
 	font-family: 'Roboto Mono', monospace !important;
@@ -441,3 +441,22 @@ ul.fancytree-container {
 }
 .fancy-button.green {background-color: #73c568;}
 .fancy-button.green::after {background-color: #67A55D;}
+
+.lm_header .lm_tab {
+	padding-right: 11px !important;
+}
+
+.lm_header .lm_tab img.saveButton {
+	margin-top: 1px;
+    display: block;
+    margin-left: 15px;
+	float: right;
+	opacity: 0.6;
+	cursor: default;
+}
+.lm_header .lm_tab img.saveButton:hover {
+	opacity: 0.9;
+}
+.myStuff span.fancytree-title {
+	color: #03c603 !important;
+}

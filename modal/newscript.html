@@ -1,0 +1,79 @@
+<link rel="stylesheet" href="../css/newscript.css">
+
+<form onsubmit="return false;">
+<div class="window">
+  <header class="toolbar toolbar-header draggable">
+	<div class="draghandle"></div>
+    <h2 class="title pull-left">
+		<b style="padding: 2px 0px 2px 4px">Save script</b>
+	</h2>
+	<div onclick="window.close()" id="topClose">
+		<i class="far fa-window-close"></i>
+	</div>
+  </header>
+  <div class="window-content" style="background: #e5e5e5">
+    <div class="pane-group">
+      <div id="mainPane" class="pane">
+		<label for="txtScriptName" style="margin-left: 20px; margin-right: 23px;">Script name:</label>
+		<input tabindex="0" id="txtScriptName" type="text" required />
+	  </div>
+    </div>
+  </div>
+  <footer class="toolbar toolbar-footer">
+    <div class="toolbar-actions">
+    <button onclick="window.close()" tabindex="4" id="btnCancel" class="btn btn-default pull-right">
+      Cancel
+    </button>
+    <button tabindex="3" type="submit" onclick="saveScript()" id="btnOk" class="btn btn-primary pull-right">
+      Save
+    </button>
+  </div>
+  </footer>
+</div>
+</form>
+
+<script>
+    const remote = require('electron').remote;
+    const fs = require('fs-extra');
+    const process = require('process');
+    const dialog = remote.dialog;
+
+    let scriptData = null;
+    const cwd = process.cwd();
+
+    const ipcRenderer = require('electron').ipcRenderer;
+	ipcRenderer.on('script-data', function (event, data) {
+        scriptData = data.data;
+    });
+
+    function saveAndClose(name, data) {
+        fs.writeFileSync(cwd + "/customScripts/" + name.trim() + ".dat", data, "utf-8");
+        require('electron').ipcRenderer.send('save-script-finished', { name: name });
+        window.close();
+    }
+
+    function saveScript() {	
+        let name = document.getElementById('txtScriptName').value;
+        if (name.trim() === "") {
+            document.getElementById('txtScriptName').setCustomValidity("Enter script name!");
+        }
+        else {
+            if (fs.existsSync(cwd + "/customScripts/" + name.trim() + ".dat")) {
+                let response = dialog.showMessageBoxSync(require('electron').remote.getCurrentWindow(), {
+                    type: 'question',
+                    buttons: ['Yes', 'No'],
+                    title: 'Script exists',
+                    message: 'Script with given name already exists!\nDo you want to overwrite it?'
+                });
+                if (response === 0) {
+                    saveAndClose(name, scriptData);
+                }
+            }
+            else {
+                saveAndClose(name, scriptData);
+            }
+        }
+    }
+
+    window.onload = function() { document.getElementById("txtScriptName").focus(); };
+</script>

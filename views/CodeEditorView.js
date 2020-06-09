@@ -22,9 +22,19 @@ let CodeEditorView = function(container, state) {
 	}
 	
 	container.on('resize', function(e) {
-		if (codeEditorDiv.loadScript) {
-			codeEditorDiv.resizeCodeEditor();
-		}
+		window.signals.codeEditorResize.dispatch();
+	});
+
+	container.on('tab', function(tab) {
+		let saveButton = new Image();
+		saveButton.title = "Save changes";
+		saveButton.className = "saveButton";
+		saveButton.src = "./assets/save.png";
+		tab.element.append(saveButton);
+
+		saveButton.addEventListener("click", function(e) {
+			window.signals.saveScriptButtonClicked.dispatch();
+		});
 	});
 	
 };

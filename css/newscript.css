@@ -1,0 +1,68 @@
+@font-face {
+    font-family: 'Roboto Mono';
+    src: url('RobotoMono-Medium.woff2') format('woff2');
+    font-weight: normal; 
+    font-style: normal;
+}
+html, body {
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+    font-family: 'Roboto Mono', monospace;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-o-user-select: none;
+	user-select: none;
+}
+.window {
+	border: solid 1px #aaa;
+}
+button {
+	font-family: 'Roboto Mono', monospace;
+	cursor: pointer;
+}
+.title {
+	margin: 0;
+	margin-top: 2px;
+	font-size: 15px;
+	text-indent: 3px;
+	pointer-events: none;
+	position: absolute;
+	top: 5px;
+	left: 3px;
+}
+.toolbar-header {
+	background: #afcbef;
+	border-bottom: solid 1px #aaa;
+}
+div.draghandle {
+	width: 93.5%;
+	height: 31px;
+	position: relative;
+	-webkit-app-region: drag;
+}
+#mainPane {
+	height: 93px;
+}
+.toolbar-actions {
+	padding: 5px;
+    text-align: right;
+}
+input {
+	text-indent: 4px;
+    font-size: 17px;
+	padding: 2px;
+}
+#txtScriptName {
+    width: 250px; 
+    font-size: 16px; 
+    margin-top: 15px;
+}
+#topClose {
+	top: 6px;
+	right: 7px;
+	position: absolute;
+	font-size: 20px;
+	cursor: pointer;
+}

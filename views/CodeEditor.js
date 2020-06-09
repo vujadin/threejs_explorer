@@ -1,6 +1,8 @@
 'use strict'
 
 let CodeEditor = function() {
+
+	let me = this;
 	
 	let monacoEditor = null;
 	
@@ -25,7 +27,7 @@ let CodeEditor = function() {
 	self.module = undefined;
 	
 	let saveChanges = function() {
-		if (document.getElementById('codeEditor').scriptLoaded) {
+		if (me.scriptLoaded) {
 			fs.writeFileSync(cwd + "/three.js-master/examples/tmpScript.js", monacoEditor.getValue());
 			document.getElementById("previewIFrame").src = cwd + "/three.js-master/examples/index_tmp.html?ver=" + Math.random();
 		}
@@ -33,12 +35,30 @@ let CodeEditor = function() {
 			alert("No example loaded!\nLoad an example first.");
 		}
 	};
-	
-	let me = this;
+
+	let saveCustomScript = function() {
+		if (me.scriptLoaded && window.loadedExample) {
+			let newScript = {
+				htmlFile: window.loadedExample + ".html",
+				content: monacoEditor.getValue()
+			};
+			if (!fs.existsSync(path.join(cwd + "/customScripts"))) {
+				fs.mkdirSync(path.join(cwd + "/customScripts"));
+			}
+
+			require('electron').ipcRenderer.send('save-script', { data: JSON.stringify(newScript) });
+		}
+	};
 	
 	this.loadScript = function(data) {
 		monacoEditor.setValue(data);
 		monacoEditor.layout();
+	};
+
+	this.resize = function() {
+		if (monacoEditor) {
+			monacoEditor.layout();
+		}
 	};
 
 	amdRequire(['vs/editor/editor.main'], function() {
@@ -49,8 +69,6 @@ let CodeEditor = function() {
 			wordWrap: true,
 			fontSize: 15
 		});
-		document.getElementById('codeEditor').loadScript = me.loadScript;
-		document.getElementById('codeEditor').resizeCodeEditor = function() { monacoEditor.layout(); };
 		monacoEditor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S, function() {
 			saveChanges();
 		});
@@ -59,5 +77,7 @@ let CodeEditor = function() {
 		});
 		monacoEditor.layout();
 	});
+
+	window.signals.saveScriptButtonClicked.add(saveCustomScript);
 	
 };

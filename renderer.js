@@ -1,4 +1,13 @@
 (function() {
+
+	let Signal = module.exports.Signal;
+	
+	window.signals = {		
+		saveChanges: new Signal(),
+		loadScript: new Signal(),
+		codeEditorResize: new Signal(),
+		saveScriptButtonClicked: new Signal()
+	};
 	
 	let appLayout = null;
 	let initApp = function() { 
@@ -58,9 +67,7 @@
 		appLayout.registerComponent('ExamplesTreeView', ExamplesTreeView);
 		appLayout.registerComponent('CodeEditorView', CodeEditorView);
 		appLayout.init();
-		
-		window.layout = appLayout;
-		
+				
 		window.changeLayout = function(type) {
 			let layoutCfg = JSON.parse(fs.readFileSync(path.join(__dirname, "/layouts/type" + type + ".json"), "utf8"));
 			document.body._codeEditor.style.display = "none";
@@ -74,22 +81,29 @@
 			appLayout.init();
 		};
 		
-		let codeEditor = new CodeEditor();		
+		let codeEditor = new CodeEditor();
+		window.signals.loadScript.add(function(data) {
+			codeEditor.loadScript(data);
+			codeEditor.scriptLoaded = true;
+		});
+		window.signals.saveChanges.add(function(data) {
+
+		});
+		window.signals.codeEditorResize.add(function() {
+			codeEditor.resize();
+		});
 	};
 	
 	let ipcr = require('electron').ipcRenderer;
-	ipcr.on('saveLayout', function(event, message) {
+	ipcr.on('saveLayout', function(event, msg) {
 		let customLayout = null;
-		try {
-			customLayout = appLayout.toConfig();
+		customLayout = appLayout.toConfig();		
+		if (customLayout) {
+			fs.writeFileSync(path.join(__dirname, "/layouts/custom.json"), JSON.stringify(customLayout, null, 4), "utf-8");	
 		}
-		catch( err ) {
-			console.log(err);
-		}
-		
-		if (customLayout != null) {
-			fs.writeFileSync(path.join(__dirname, "/layouts/custom.json"), JSON.stringify(customLayout, null, 4), "utf-8");				
-		}
+	});
+	ipcr.on('set-custom-script-active', function(event, msg) {
+		window.signals.saveChanges.dispatch(msg);
 	});
 	
 	if (!fs.existsSync(process.cwd() + "/three.js-master")) {
