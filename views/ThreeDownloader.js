@@ -8,7 +8,8 @@ let ThreeDownloader = function(callback) {
 	let tips = [
 		"<span class='tipgreen'>Tip: </span>Use CTRL+S or F5 to reload example with your modifications.",
 		"<span class='tipgreen'>Tip: </span>Arrange panels as you like. App will save your layout settings.",
-		"<span class='tipgreen'>Tip: </span>App doesn't modify three.js examples in any way, so you have full freedom to modify and <i>brake</i> the code. It's the best way to learn!"
+		"<span class='tipgreen'>Tip: </span>App doesn't modify three.js examples in any way, so you have full freedom to modify and <i>brake</i> the code. It's the best way to learn!",
+		"<span class='tipgreen'>Tip: </span>Version 0.0.2 brings more flexibility as you can now save your changes as custom scripts. Click on a <img src='assets/save.png' /> icon to save your work. Your scripts will show up in 'CUSTOM' folder in the tree-view."
 	];
 	let loopTipInterval = -1;
 	let tipsCount = 0;
@@ -26,7 +27,7 @@ let ThreeDownloader = function(callback) {
 	downloadScreen.id = 'downloadScreen';
 	downloadScreen.innerHTML = '' +
 	'<div class="wrapper">' +
-	'	<h1>Three.js explorer v0.0.1</h1><br/>' +
+	'	<h1>Three.js explorer v0.0.2</h1><br/>' +
 	'	<span class="instructions">Welcome to "Three.js explorer"!</span>' +
 	'	<span class="instructions">To start using the app, you must first download Three.js repository.</span>' +
 	'	<span class="instructions" id="downloadingMsg">Click button below to start downloading.</span><br/>' + 
